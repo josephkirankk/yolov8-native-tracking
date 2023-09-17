@@ -5,6 +5,7 @@ import supervision as sv
 import numpy as np
 
 
+
 LINE_START = sv.Point(320, 0)
 LINE_END = sv.Point(320, 480)
 
@@ -18,28 +19,24 @@ def main():
         text_scale=0.5
     )
 
-    model = YOLO("yolov8l.pt")
-    for result in model.track(source=0, show=True, stream=True, agnostic_nms=True):
+    model = YOLO("yolov8n.pt")
+    rtsp_stream_url = "rtsp://joseph:joseph@192.168.1.120:554/stream1"
+    
+    #source can by equal to =0, =1, =2, etc. for webcam
+    for result in model.track(source=rtsp_stream_url, show=True, stream=True, agnostic_nms=True):
         
-        frame = result.orig_img
-        detections = sv.Detections.from_yolov8(result)
+        #frame = result.orig_img
+        #detections = sv.Detections.from_yolov8(result)
+        
+        #result = model(frame)[0]
+        detections = sv.Detections.from_ultralytics(result)
 
         if result.boxes.id is not None:
             detections.tracker_id = result.boxes.id.cpu().numpy().astype(int)
-        
-        detections = detections[(detections.class_id != 60) & (detections.class_id != 0)]
-
-        labels = [
-            f"{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
-            for _, confidence, class_id, tracker_id
-            in detections
-        ]
-
-        frame = box_annotator.annotate(
-            scene=frame, 
-            detections=detections,
-            labels=labels
-        )
+        detections = detections[detections.class_id == 0]
+        detections = detections[detections.confidence > 0.5]
+        detections = detections[detections.area > 1000]
+        #detections = detections[(detections.class_id != 60) & (detections.class_id != 0)]
 
         line_counter.trigger(detections=detections)
         line_annotator.annotate(frame=frame, line_counter=line_counter)
