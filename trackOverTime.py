@@ -6,10 +6,10 @@ import numpy as np
 from ultralytics import YOLO
 
 # Load the YOLOv8 model
-model = YOLO('yolov8n.pt')
+model = YOLO('pop_n.pt')
 
 # Open the video file
-video_path = "test.mp4"
+video_path = "vg_pop_video1.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Store the track history
@@ -26,7 +26,13 @@ while cap.isOpened():
 
         # Get the boxes and track IDs
         boxes = results[0].boxes.xywh.cpu()
-        track_ids = results[0].boxes.id.int().cpu().tolist()
+        
+        #track_ids = results[0].boxes.id.int().cpu().tolist()
+
+        if results[0].boxes.id is None:
+            pass
+        else:
+            track_ids = results[0].boxes.id.int().cpu().tolist()
 
         # Visualize the results on the frame
         annotated_frame = results[0].plot()
@@ -41,7 +47,7 @@ while cap.isOpened():
 
             # Draw the tracking lines
             points = np.hstack(track).astype(np.int32).reshape((-1, 1, 2))
-            cv2.polylines(annotated_frame, [points], isClosed=False, color=(230, 230, 230), thickness=10)
+            cv2.polylines(annotated_frame, [points], isClosed=False, color=(100, 100, 230), thickness=5)
 
         # Display the annotated frame
         cv2.imshow("YOLOv8 Tracking", annotated_frame)
