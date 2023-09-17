@@ -12,7 +12,7 @@ def callback(frame: np.ndarray, index: int) -> np.ndarray:
      detections = sv.Detections.from_ultralytics(results)
      detections = byte_tracker.update_with_detections(detections)
      labels = [
-         f"#{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
+         f"#JK_{tracker_id} {model.model.names[class_id]} {confidence:0.2f}"
          for _, _, confidence, class_id, tracker_id
          in detections
      ]
