@@ -5,18 +5,24 @@ from ultralytics import YOLO
 import supervision as sv
 import numpy as np
 import cv2
+import time
 
 
 HOME = os.getcwd()
 print(HOME)
 
-SOURCE_VIDEO_PATH = f"{HOME}/vehicle-counting.mp4"
-MODEL = "yolov8x.pt"
+SOURCE_VIDEO_PATH = f"{HOME}/aku-v1.mp4"
+MODEL = "pop_n.pt"
 # settings
-LINE_START = sv.Point(50, 1500)
-LINE_END = sv.Point(3840-50, 1500)
+# LINE_START = sv.Point(50, 1500)
+# LINE_END = sv.Point(3840-50, 1500)
 
-TARGET_VIDEO_PATH = f"{HOME}/vehicle-counting-result-with-counter.mp4"
+LINE_START = sv.Point(429, 178)
+LINE_END = sv.Point(539, 474)
+
+
+
+TARGET_VIDEO_PATH = f"{HOME}/aku-v1-out.mp4"
 
 
 display.clear_output()
@@ -31,7 +37,7 @@ CLASS_NAMES_DICT = model.model.names
 
 # class_ids of interest - car, motorcycle, bus and truck
 #selected_classes = [2, 3, 5, 7]
-selected_classes = [2]
+selected_classes = [0]
 line_points = []
 
 def draw_line(event, x, y, flags, param):
@@ -46,6 +52,7 @@ def draw_line(event, x, y, flags, param):
             # Now line_points[0] and line_points[1] contain the coordinates of the line
             # You can use these coordinates elsewhere in your script as needed
             # Reset the line_points list to allow drawing a new line
+            print(line_points)
             line_points = []
 
 def showOneFrame():
@@ -83,13 +90,13 @@ def showOneFrame():
 
 sv.VideoInfo.from_video_path(SOURCE_VIDEO_PATH)
 # create BYTETracker instance
-byte_tracker = sv.ByteTrack(track_thresh= 0.25, track_buffer = 30,match_thresh = 0.8,frame_rate =30)
+byte_tracker = sv.ByteTrack(track_thresh= 0.25, track_buffer = 30,match_thresh = 0.8,frame_rate =20)
 
 # create VideoInfo instance
 video_info = sv.VideoInfo.from_video_path(SOURCE_VIDEO_PATH)
 
 # create frame generator
-generator = sv.get_video_frames_generator(SOURCE_VIDEO_PATH)
+generator = sv.get_video_frames_generator(SOURCE_VIDEO_PATH, stride=2)
 
 # create LineZone instance, it is previously called LineCounter class
 line_zone = sv.LineZone(start=LINE_START, end=LINE_END)
@@ -124,11 +131,19 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
     # return frame with box and line annotated result
     return  line_zone_annotator.annotate(box_annotated_frame, line_counter=line_zone)
 
-showOneFrame()
+#showOneFrame()
 
-# process the whole video
-# sv.process_video(
-#     source_path = SOURCE_VIDEO_PATH,
-#     target_path = TARGET_VIDEO_PATH,
-#     callback=callback
-# )
+start_time = time.time()
+#process the whole video
+sv.process_video(
+    source_path = SOURCE_VIDEO_PATH,
+    target_path = TARGET_VIDEO_PATH,
+    callback=callback
+)
+
+end_time = time.time()
+
+# Calculate the duration
+duration = end_time - start_time
+
+print(f"Execution time: {duration:.6f} seconds")
