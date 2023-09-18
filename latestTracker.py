@@ -4,6 +4,7 @@ import ultralytics
 from ultralytics import YOLO
 import supervision as sv
 import numpy as np
+import cv2
 
 
 HOME = os.getcwd()
@@ -29,9 +30,26 @@ model.fuse()
 CLASS_NAMES_DICT = model.model.names
 
 # class_ids of interest - car, motorcycle, bus and truck
-selected_classes = [2, 3, 5, 7]
+#selected_classes = [2, 3, 5, 7]
+selected_classes = [2]
+line_points = []
+
+def draw_line(event, x, y, flags, param):
+    global line_points
+
+    if event == cv2.EVENT_LBUTTONDOWN:
+        line_points.append((x, y))
+
+        if len(line_points) == 2:
+            cv2.line(frame, line_points[0], line_points[1], (0, 255, 0), 2)
+            cv2.imshow('Frame', frame)
+            # Now line_points[0] and line_points[1] contain the coordinates of the line
+            # You can use these coordinates elsewhere in your script as needed
+            # Reset the line_points list to allow drawing a new line
+            line_points = []
 
 def showOneFrame():
+    global frame, line_points
     # create frame generator
     generator = sv.get_video_frames_generator(SOURCE_VIDEO_PATH)
     # create instance of BoxAnnotator
@@ -55,8 +73,12 @@ def showOneFrame():
 
     # annotate and display frame
     anotated_frame=box_annotator.annotate(scene=frame, detections=detections, labels=labels)
-
-    sv.plot_image(anotated_frame, (16,16))
+    frame = anotated_frame
+    #sv.plot_image(anotated_frame, (16,16))
+    cv2.imshow('Frame', anotated_frame)
+    cv2.setMouseCallback('Frame', draw_line)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 sv.VideoInfo.from_video_path(SOURCE_VIDEO_PATH)
@@ -98,14 +120,15 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
                                     labels=labels)
     # update line counter
     line_zone.trigger(detections)
+    print(line_zone.in_count, line_zone.out_count)
     # return frame with box and line annotated result
     return  line_zone_annotator.annotate(box_annotated_frame, line_counter=line_zone)
 
-#showOneFrame()
+showOneFrame()
 
 # process the whole video
-sv.process_video(
-    source_path = SOURCE_VIDEO_PATH,
-    target_path = TARGET_VIDEO_PATH,
-    callback=callback
-)
+# sv.process_video(
+#     source_path = SOURCE_VIDEO_PATH,
+#     target_path = TARGET_VIDEO_PATH,
+#     callback=callback
+# )
