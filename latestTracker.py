@@ -12,9 +12,9 @@ import threading
 HOME = os.getcwd()
 print(HOME)
 
-SOURCE_VIDEO_PATH = f"{HOME}/uv-v1.mp4"
+SOURCE_VIDEO_PATH = f"{HOME}/videos/aku-v2.mp4"
 #MODEL = "astra_pop_nv1.pt"
-MODEL = "pop_nv2.pt"
+MODEL = "pop_v2.1.pt"
 # settings
 # LINE_START = sv.Point(50, 1500)
 # LINE_END = sv.Point(3840-50, 1500)
@@ -28,14 +28,14 @@ MODEL = "pop_nv2.pt"
 # LINE_END = sv.Point(539, 474)
 
 # aku-v2
-# lineArray = [(362, 38), (463, 477)]
-# LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
-# LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
-
-# uv-v1
-lineArray = [(0, 200), (845, 376)]
+lineArray = [(362, 38), (463, 477)]
 LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
 LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
+
+# uv-v1
+# lineArray = [(0, 200), (845, 376)]
+# LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
+# LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
 
 #uv-1
