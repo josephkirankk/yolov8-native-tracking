@@ -12,9 +12,9 @@ import threading
 HOME = os.getcwd()
 print(HOME)
 
-SOURCE_VIDEO_PATH = f"{HOME}/aku-v1.mp4"
+SOURCE_VIDEO_PATH = f"{HOME}/uv-v1.mp4"
 #MODEL = "astra_pop_nv1.pt"
-MODEL = "pop_n.pt"
+MODEL = "pop_nv2.pt"
 # settings
 # LINE_START = sv.Point(50, 1500)
 # LINE_END = sv.Point(3840-50, 1500)
@@ -23,8 +23,19 @@ MODEL = "pop_n.pt"
 # LINE_START = lineArray[0]
 # LINE_END = lineArray[1]
 
-LINE_START = sv.Point(429, 178)
-LINE_END = sv.Point(539, 474)
+# aku-v1
+# LINE_START = sv.Point(429, 178)
+# LINE_END = sv.Point(539, 474)
+
+# aku-v2
+# lineArray = [(362, 38), (463, 477)]
+# LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
+# LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
+
+# uv-v1
+lineArray = [(0, 200), (845, 376)]
+LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
+LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
 
 #uv-1
@@ -37,7 +48,7 @@ LINE_END = sv.Point(539, 474)
 
 
 
-TARGET_VIDEO_PATH = f"{HOME}/output.mp4"
+TARGET_VIDEO_PATH = f"{HOME}/output_2.mp4"
 
 
 display.clear_output()
@@ -99,7 +110,7 @@ def showOneFrame():
     #sv.plot_image(anotated_frame, (16,16))
     
     cv2.imshow('Frame', anotated_frame)
-    cv2.line(frame, LINE_START, LINE_END, (203, 255, 0), 2)
+    cv2.line(frame, LINE_START.as_xy_int_tuple(), LINE_END.as_xy_int_tuple(), (203, 255, 0), 2)
     cv2.imshow('Frame', anotated_frame)
     cv2.setMouseCallback('Frame', draw_line)
     cv2.waitKey(0)
