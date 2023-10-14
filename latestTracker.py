@@ -36,7 +36,8 @@ MODEL = "yolov8l.pt"
 # LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
 # people entry
-lineArray = [(3, 427), (637, 172)]
+lineArray = [(1, 371), (637, 364)]
+
 LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
 LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
@@ -206,71 +207,71 @@ def scaledowndetections(frame,detections,scale):
     return detections
 
 
-def scale_detections(frame,detections, scale_factor):
-    scaled_detections = []
-    xyxy_objects = detections.xyxy.tolist()
+# def scale_detections(frame,detections, scale_factor):
+#     scaled_detections = []
+#     xyxy_objects = detections.xyxy.tolist()
     
-    # loop over xyzy_objects
-    for xyxy_object in xyxy_objects:
-        # Extract bounding box coordinates
-        x1, y1, x2, y2 = xyxy_object  # Assuming detection is a tuple or list with format (x1, y1, x2, y2)
+#     # loop over xyzy_objects
+#     for xyxy_object in xyxy_objects:
+#         # Extract bounding box coordinates
+#         x1, y1, x2, y2 = xyxy_object  # Assuming detection is a tuple or list with format (x1, y1, x2, y2)
         
-        center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
-        # draw center point
-        cv2.circle(frame, (int(center_x), int(center_y)), 5, (0, 0, 255), -1)
+#         center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
+#         # draw center point
+#         cv2.circle(frame, (int(center_x), int(center_y)), 5, (0, 0, 255), -1)
         
-        width, height = x2 - x1, y2 - y1
+#         width, height = x2 - x1, y2 - y1
 
-        # Scale width and height
-        new_width = width * scale_factor
-        new_height = height * scale_factor
+#         # Scale width and height
+#         new_width = width * scale_factor
+#         new_height = height * scale_factor
 
-        # Calculate new bounding box coordinates
-        new_x1 = center_x - new_width / 2
-        new_y1 = center_y - new_height / 2
-        new_x2 = center_x + new_width / 2
-        new_y2 = center_y + new_height / 2
+#         # Calculate new bounding box coordinates
+#         new_x1 = center_x - new_width / 2
+#         new_y1 = center_y - new_height / 2
+#         new_x2 = center_x + new_width / 2
+#         new_y2 = center_y + new_height / 2
 
-        # Create a new detection with scaled coordinates
-        scaled_detection = (new_x1, new_y1, new_x2, new_y2)
+#         # Create a new detection with scaled coordinates
+#         scaled_detection = (new_x1, new_y1, new_x2, new_y2)
 
-        scaled_detections.append(scaled_detection)
+#         scaled_detections.append(scaled_detection)
     
-    # if len(xyxy_objects) == 0:
-    #     return prevStateAllSide
-    # strDynamic = ""
-    # currentState = [0,0,0,0]
-    # detected_object = xyxy_objects[0]
-    # boxx1 = detected_object[0]
-    # boxy1 = detected_object[1]
-    # boxx2 = detected_object[2]
-    # boxy2 = detected_object[3]
+#     # if len(xyxy_objects) == 0:
+#     #     return prevStateAllSide
+#     # strDynamic = ""
+#     # currentState = [0,0,0,0]
+#     # detected_object = xyxy_objects[0]
+#     # boxx1 = detected_object[0]
+#     # boxy1 = detected_object[1]
+#     # boxx2 = detected_object[2]
+#     # boxy2 = detected_object[3]
     
-    # for detection in detections:
-    #     ultralytics_results.boxes.xyxy.cpu().numpy()
-    #     # Extract bounding box coordinates
-    #     x1, y1, x2, y2 = detection.boxes.xyxy.cpu().numpy()  # Assuming detection is a tuple or list with format (x1, y1, x2, y2)
+#     # for detection in detections:
+#     #     ultralytics_results.boxes.xyxy.cpu().numpy()
+#     #     # Extract bounding box coordinates
+#     #     x1, y1, x2, y2 = detection.boxes.xyxy.cpu().numpy()  # Assuming detection is a tuple or list with format (x1, y1, x2, y2)
         
-    #     # Calculate center, width and height
-    #     center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
-    #     width, height = x2 - x1, y2 - y1
+#     #     # Calculate center, width and height
+#     #     center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
+#     #     width, height = x2 - x1, y2 - y1
 
-    #     # Scale width and height
-    #     new_width = width * scale_factor
-    #     new_height = height * scale_factor
+#     #     # Scale width and height
+#     #     new_width = width * scale_factor
+#     #     new_height = height * scale_factor
 
-    #     # Calculate new bounding box coordinates
-    #     new_x1 = center_x - new_width / 2
-    #     new_y1 = center_y - new_height / 2
-    #     new_x2 = center_x + new_width / 2
-    #     new_y2 = center_y + new_height / 2
+#     #     # Calculate new bounding box coordinates
+#     #     new_x1 = center_x - new_width / 2
+#     #     new_y1 = center_y - new_height / 2
+#     #     new_x2 = center_x + new_width / 2
+#     #     new_y2 = center_y + new_height / 2
 
-    #     # Create a new detection with scaled coordinates
-    #     scaled_detection = (new_x1, new_y1, new_x2, new_y2)
+#     #     # Create a new detection with scaled coordinates
+#     #     scaled_detection = (new_x1, new_y1, new_x2, new_y2)
 
-    #     scaled_detections.append(scaled_detection)
+#     #     scaled_detections.append(scaled_detection)
 
-    return scaled_detections
+#     return scaled_detections
 
 
 
@@ -292,6 +293,7 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
     
     # scale down the detections to 10% of original size
     detections = scaledowndetections(frame,detections,0.1)
+    
     #detections = scale_detections(frame,detections, 0.1)
     
     # tracking detections
@@ -309,7 +311,9 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
     
     if(NEED_BOX_ANNOTATION):
         finalFrame = box_annotated_frame
-        
+    
+    
+    
     # update line counter
     line_zone.trigger(detections)
     print(line_zone.in_count, line_zone.out_count)
@@ -331,7 +335,7 @@ def processVideo():
     source_video_info = sv.VideoInfo.from_video_path(video_path=SOURCE_VIDEO_PATH)
     with sv.VideoSink(target_path=TARGET_VIDEO_PATH, video_info=source_video_info) as sink:
         for index, frame in enumerate(
-            sv.get_video_frames_generator(source_path=SOURCE_VIDEO_PATH,stride=1)
+            sv.get_video_frames_generator(source_path=SOURCE_VIDEO_PATH)#,stride=1)
         ):
             result_frame = callback(frame, index)
             sink.write_frame(frame=result_frame)
