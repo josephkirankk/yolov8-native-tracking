@@ -7,12 +7,15 @@ import numpy as np
 import cv2
 import time
 import threading
+from AxisLine import AxisLine
 
 
 HOME = os.getcwd()
 print(HOME)
 
-SOURCE_VIDEO_PATH = f"{HOME}/videos/v1.mp4"
+SOURCE_VIDEO_PATH = f"{HOME}/videos/v2.mp4"
+TARGET_VIDEO_PATH = f"{HOME}/videos/v2_out.mp4"
+NEED_BOX_ANNOTATION = True
 #SOURCE_VIDEO_PATH = "C:\JK\dev\repo\yolov8-native-tracking\videos\new\output_1696750021.mp4"
 
 #MODEL = "astra_pop_nv1.pt"
@@ -36,10 +39,13 @@ MODEL = "yolov8l.pt"
 # LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
 # people entry
-lineArray = [(1, 371), (637, 364)]
+lineArray = [(2, 350), (635, 350)]
 
 LINE_START = sv.Point(lineArray[0][0], lineArray[0][1])
 LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
+
+AxisLine1 = AxisLine(LINE_START.x + 10, LINE_START.y+ 10, LINE_END.x, LINE_END.y, (0, 255, 0), 2)
+
 
 # uv-v1
 # lineArray = [(0, 200), (845, 376)]
@@ -60,8 +66,7 @@ LINE_END = sv.Point(lineArray[1][0], lineArray[1][1])
 
 
 
-TARGET_VIDEO_PATH = f"{HOME}/videos/v1_out.mp4"
-NEED_BOX_ANNOTATION = True
+
 
 #TARGET_VIDEO_PATH = "C:\JK\dev\repo\yolov8-native-tracking\videos\new\output_1696750021.mp4"
 
@@ -109,7 +114,9 @@ def showOneFrame():
     for j in range(0, skip_frames):
         frame = next(iterator)
         
-        
+    AxisLine1.draw(frame)
+    
+    
     # for i in range(0, 20):
     #     frame = next(iterator)
     #     # write text on frame
@@ -152,7 +159,7 @@ def showOneFrame():
     final_frame = frame
     
     cv2.imshow('Frame', final_frame)
-    cv2.line(frame, LINE_START.as_xy_int_tuple(), LINE_END.as_xy_int_tuple(), (203, 255, 0), 2)
+    cv2.line(frame, LINE_START.as_xy_int_tuple(), LINE_END.as_xy_int_tuple(), (255, 0, 0), 2)
     cv2.imshow('Frame', final_frame)
     cv2.setMouseCallback('Frame', draw_line)
     cv2.waitKey(0)
@@ -183,12 +190,36 @@ frameCount = 0
 def scaledowndetections(frame,detections,scale):
     # get bounding boxes from detections and find their center points
     xyxy_objects = detections.xyxy.tolist()
-        
+    
+    # for xyxy in detections.xyxy:
+    #     x1, y1, x2, y2 = xyxy
+    #     center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
+
+    #     # scale down the detections to 10% of original size towards the center
+    #     width = (x2 - x1) * scale
+    #     height = (y2 - y1) * scale
+
+    #     # update bounding box coordinates
+    #     xyxy = [center_x - width / 2, center_y - height / 2, center_x + width / 2, center_y + height / 2]
+    
     for xyxy in xyxy_objects:
         x1,y1,x2,y2 = xyxy
+        
+        center_x, center_y = (x1 + x2) / 2, (y1 + y2) / 2
+
+        # scale down the detections to 10% of original size towards the center
+        width = (x2 - x1) * scale
+        height = (y2 - y1) * scale
+        
+        # draw rectangle
+        cv2.rectangle(frame, (int(center_x - width / 2), int(center_y - height / 2)), (int(center_x + width / 2), int(center_y + height / 2)), (0, 255, 0), 2)
+        
+        
+        
+        
         # find the center of the box
-        x = (x1 + x2) / 2
-        y = (y1 + y2) / 2
+        x = center_x
+        y = center_y
         # draw a circle on the center of the box
         cv2.circle(frame, (int(x), int(y)), 5, (0, 0, 255), -1)
         
@@ -292,7 +323,7 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
     # get bounding boxes from detections and find their center points
     
     # scale down the detections to 10% of original size
-    detections = scaledowndetections(frame,detections,0.1)
+    detections = scaledowndetections(frame,detections,0.05)
     
     #detections = scale_detections(frame,detections, 0.1)
     
@@ -315,7 +346,7 @@ def callback(frame: np.ndarray, index:int) -> np.ndarray:
     
     
     # update line counter
-    line_zone.trigger(detections)
+    line_zone.trigger_center(detections)
     print(line_zone.in_count, line_zone.out_count)
     
         
